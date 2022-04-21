@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 def canUnlockAll(boxes):
+    """
+    Function for unlock boxes
+    """
     unlocked = [0]
     for index_box, value_box in enumerate(boxes):
         if not value_box:
