@@ -1,12 +1,5 @@
 #!/usr/bin/python3
 def canUnlockAll(boxes):
-    """
-    sumary_line
-
-    Keyword arguments:
-    argument -- description
-    Return: return_description
-    """
     unlocked = [0]
     for index_box, value_box in enumerate(boxes):
         if not value_box:
