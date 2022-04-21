@@ -7,15 +7,13 @@ def canUnlockAll(boxes):
     Return: return_description
     """
 
-    unlocked = [0]
+    myKeys = [0]
 
-    for index_box, value_box in enumerate(boxes):
-        if not value_box:
-            continue
-        for key in value_box:
-            if key < len(boxes) and key not in unlocked and key != index_box:
-                unlocked.append(key)
+    for key in myKeys:
+        for item in boxes[key]:
+            if item not in myKeys and item < len(boxes):
+                myKeys.append(item)
 
-    if len(unlocked) == len(boxes):
+    if len(myKeys) == len(boxes):
         return True
     return False
