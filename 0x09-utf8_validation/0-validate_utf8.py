@@ -1,48 +1,55 @@
-def ordenar(doc_id, nombre, apellidos, telefono):
-    for i in range(0, N-1):
-        for j in range(i+1, N):
-            if nombre[i] > nombre[j]:
-                # organizo doc_id
-                t = doc_id[i]
-                doc_id[i] = doc_id[j]
-                doc_id[j] = t
-                # organizo nombre
-                t = nombre[i]
-                nombre[i] = nombre[j]
-                nombre[j] = t
-                # organizo apellidos
-                t = apellidos[i]
-                apellidos[i] = apellidos[j]
-                apellidos[j] = t
-                # organizo telefono
-                t = telefono[i]
-                telefono[i] = telefono[j]
-                telefono[j] = t
-                return doc_id, nombre, apellidos, telefono
+
+#!/usr/bin/python3
+"""ti hao 9alek Module for validUtf8 method wala dra chnowa"""
 
 
-N = int(input('Ingrese cantidad de datos a registrar: '))
-doc_id = []
-nombre = []
-apellidos = []
-telefono = []
-for i in range(N):
-    doc_id.append(int(input('ingrese documento de identidad: ')))
-    nombre.append(input('ingrese nombre: '))
-    apellidos.append(input('apellido: '))
-    telefono.append(int(input('Telefono: ')))
-    print()
-    print(doc_id)
-    print(nombre)
-    print(apellidos)
-    print(telefono)
-    documento, nombres, apellido, telefonos = ordenar(
-        doc_id, nombre, apellidos, telefono)
-    print()
-    print()
-for x in range(N):
-    print(documento[x])
-    print(nombres[x])
-    print(apellido[x])
-    print(telefonos[x])
-    print()
+def to_bits(bytes):
+    for byte in bytes:
+        num = []
+        exp = 1 << NUMBER_OF_BITS_PER_BLOCK
+        while exp:
+            exp >>= 1
+            num.append(bool(byte & exp))
+        yield num
+
+
+"""ti hao 9alek Module for validUtf8 method wala dra chnowa"""
+
+
+def validUTF8(data):
+    bpc = 8
+    mno = 4
+    index = 0
+    while index < len(data):
+        number = data[index] & (2 ** 7)
+        number >>= (bpc - 1)
+        if number == 0:
+            index += 1
+            continue
+        number_of_ones = 0
+        while True:
+            number = data[index] & (2 ** (7 - number_of_ones))
+            number >>= (bpc - number_of_ones - 1)
+            if number == 1:
+                number_of_ones += 1
+            else:
+                break
+            if number_of_ones > mno:
+                return False
+        if number_of_ones == 1:
+            return False
+        index += 1
+        if index >= len(data) or index >= (index + number_of_ones - 1):
+            return False
+        for i in range(index, index + number_of_ones - 1):
+            number = data[i]
+
+            number >>= (bpc - 1)
+            if number != 1:
+                return False
+            number >>= (bpc - 1)
+            if number != 0:
+                return False
+
+            index += 1
+    return True

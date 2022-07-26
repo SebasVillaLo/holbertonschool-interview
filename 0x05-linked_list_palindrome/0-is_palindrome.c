@@ -1,36 +1,37 @@
 #include "lists.h"
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 /**
- * is_palindrome - a function that checks if
- * a singly linked list is a palindrome
- * @head: address of the head of the list
- * Return: 1 if palindrome and 0 if not
- */
+* is_palindrome - checks if a singly list is palindrome
+* @head: double pointer to the head
+* Return: 1 if palindrome, 0 otherwise
+*/
 int is_palindrome(listint_t **head)
 {
-	listint_t *tmp;
-	int i, size = 0;
-	listint_t *array[3000];
-
-	if (!head)
-		return (0);
-	if (!(*head) || !(*head)->next)
-		return (1);
-	for (i = 0; i < 3000; i++)
-		array[i] = NULL;
-	tmp = *head;
-	while (tmp)
-	{
-		array[size] = tmp;
-		size++;
-		tmp = tmp->next;
-	}
-	for (i = 0; i < (size / 2); i++)
-	{
-		if (array[i]->n != array[size - 1 - i]->n)
-		{
-			return (0);
-		}
-	}
-	return (1);
+int j = 0, i = 0, s;
+listint_t *beg, *end;
+if (!head)
+return (0);
+if (!(*head))
+return (1);
+end = *head;
+beg = *head;
+j += 1;
+while (end->next)
+{
+end = end->next;
+j++;
 }
+s = j / 2;
+while (i <= s)
+{
+if (beg->n != end->n)
+return (0);
+beg += 2;
+end -= 2;
+i++;
+}
+return (1);
+}
+

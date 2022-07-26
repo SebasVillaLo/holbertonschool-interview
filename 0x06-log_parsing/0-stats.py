@@ -1,39 +1,53 @@
 #!/usr/bin/python3
-"""stats module
 """
-from sys import stdin
+    Computes stdin input
+"""
+
+import sys
 
 
-codes = {'200': 0, '301': 0, '400': 0, '401': 0,
-         '403': 0, '404': 0, '405': 0, '500': 0}
+def parse_data(data):
+    data = data.replace(' "GET /projects/260 HTTP/1.1"',
+                        "").replace(' -', "").replace('[', "").replace(']', "")
+    if data.count("-") == 3:
+        data = data.replace('-', " ", 1)
+    array = data.split()
+    if len(array) != 5:
+        return
+    return array
+
+
+i = 0
 size = 0
-
-
-def print_info():
-    """print_info method print needed info
-
-    Args:
-        codes (dict): code status
-        size (int): size of files
-    """
+status_code = {
+    "200": 0,
+    "301": 0,
+    "400": 0,
+    "401": 0,
+    "403": 0,
+    "404": 0,
+    "405": 0,
+    "500": 0
+}
+try:
+    for line in sys.stdin:
+        i += 1
+        array = parse_data(line)
+        if array:
+            size += int(array[4])
+            if array[3] in status_code.keys():
+                status_code[array[3]] += 1
+        if i == 10:
+            print("File size: {}".format(size))
+            for k in sorted(status_code):
+                if status_code[k] != 0:
+                    print("{}: {}".format(k, status_code[k]))
+            i = 0
+except Exception:
+    pass
+finally:
     print("File size: {}".format(size))
-    for key, val in sorted(codes.items()):
-        if val > 0:
-            print("{}: {}".format(key, val))
-
-if __name__ == '__main__':
-    try:
-        for i, line in enumerate(stdin, 1):
-            try:
-                info = line.split()
-                size += int(info[-1])
-                if info[-2] in codes.keys():
-                    codes[info[-2]] += 1
-            except:
-                pass
-            if not i % 10:
-                print_info()
-    except KeyboardInterrupt:
-        print_info()
-        raise
-    print_info()
+    for k in sorted(status_code):
+        if status_code[k] != 0:
+            print("{}: {}".format(k, status_code[k]))
+    i = 0

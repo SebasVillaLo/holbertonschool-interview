@@ -1,101 +1,113 @@
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "sandpiles.h"
 
 /**
- * sandpiles_sum - Sums the sand piles
- * @grid1: First grid
- * @grid2: Second grid
- * Return:
+ * print_grid - print a grid
+ * @grid: grid
+ */
+static void print_grid(int grid[3][3])
+{
+int i, j;
+
+for (i = 0; i < 3; i++)
+{
+for (j = 0; j < 3; j++)
+{
+if (j)
+printf(" ");
+printf("%d", grid[i][j]);
+}
+printf("\n");
+}
+}
+
+/**
+ * sandpiles_sum - sums two sandpiles
+ * @grid1: first grid
+ * @grid2: second grid
  */
 void sandpiles_sum(int grid1[3][3], int grid2[3][3])
 {
-	int i, j;
-
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; j < 3; j++)
-		{
-			grid1[i][j] = grid1[i][j] + grid2[i][j];
-		}
-	}
-
-	while (is_stable(grid1) == 1)
-	{
-		fix_sandpile(grid1);
-	}
+int i, j;
+for (i = 0; i < 3; i++)
+{
+for (j = 0; j < 3; j++)
+grid1[i][j] += grid2[i][j];
+}
+while (!is_stable(grid1))
+{
+printf("=\n");
+print_grid(grid1);
+topple(grid1);
+}
 }
 
 /**
- * is_stable - Knows if the sandpile is stable
- * @grid1: The grid
- * Return: 0 on stable, 1 otherwise
+ * topple - topples sand
+ * @grid: sandpile
  */
-int is_stable(int grid1[3][3])
+void topple(int grid[3][3])
 {
-	int i, j;
-
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; j < 3; j++)
-		{
-			if (grid1[i][j] > 3)
-				return (1);
-		}
-	}
-	return (0);
+int i, j;
+int new_gird[3][3];
+copy_grid(grid, new_gird);
+for (i = 0; i < 3; i++)
+{
+for (j = 0; j < 3; j++)
+{
+if (new_gird[i][j] > 3)
+{
+grid[i][j] -= 4;
+if (i + 1 < 3)
+grid[i + 1][j] += 1;
+if (j + 1 < 3)
+grid[i][j + 1] += 1;
+if (i - 1 >= 0)
+grid[i - 1][j] += 1;
+if (j - 1 >= 0)
+grid[i][j - 1] += 1;
+}
+}
+}
 }
 
 /**
- * fix_sandpile - Organize the grid
- * @grid1: The grid
- * Return:
+ * is_stable - checks if sandpile is stable
+ *
+ * @grid: sandpile
+ * Return: 1 if stable 0 if not
  */
-void fix_sandpile(int grid1[3][3])
+int is_stable(int grid[3][3])
 {
-	int i, j;
-	int sand_grid1[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+int i, j;
 
-	printf("=\n");
-	print_grid1(grid1);
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; j < 3; j++)
-		{
-			if (grid1[i][j] > 3)
-			{
-				grid1[i][j] -= 4;
-				if (i >= 0 && i < 2)
-					sand_grid1[i + 1][j] += 1;
-				if (i > 0 && i <= 2)
-					sand_grid1[i - 1][j] += 1;
-				if (j >= 0 && j < 2)
-					sand_grid1[i][j + 1] += 1;
-				if (j > 0 && j <= 2)
-					sand_grid1[i][j - 1] += 1;
-			}
-		}
-	}
-	for (i = 0; i < 3; i++)
-		for (j = 0; j < 3; j++)
-			grid1[i][j] += sand_grid1[i][j];
+for (i = 0; i < 3; i++)
+{
+for (j = 0; j < 3; j++)
+{
+if (grid[i][j] > 3)
+return (0);
+}
+}
+return (1);
 }
 
 /**
- * print_grid1 - Prints the grid
- * @grid: The grid
- * Return:
+ * copy_grid - copies a grid
+ *
+ * @grid: grid to copy
+ * @new_grid: destination grid
+ * Return: a copy of the grid
  */
-void print_grid1(int grid[3][3])
+void copy_grid(int grid[3][3], int new_grid[3][3])
 {
-	int i, j;
-
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; j < 3; j++)
-		{
-			if (j)
-				printf(" ");
-			printf("%d", grid[i][j]);
-		}
-		printf("\n");
-	}
+int i, j;
+for (i = 0; i < 3; i++)
+{
+for (j = 0; j < 3; j++)
+new_grid[i][j] = grid[i][j];
 }
+}
+
