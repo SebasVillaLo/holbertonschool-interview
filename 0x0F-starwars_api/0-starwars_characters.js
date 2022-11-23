@@ -2,7 +2,7 @@
 
 const request = require("request");
 
-function doRequest(url) {
+function doRequests(url) {
 	return new Promise((resolve, reject) => {
 		request(url, (error, res, body) => {
 			if (!error && res.statusCode === 200) {
@@ -19,9 +19,9 @@ async function f() {
 		// every variable with await
 		// will be whatever you passed to `resolve()` at the top
 		const link = `https://swapi-api.hbtn.io/api/films/${process.argv[2]}`;
-		const response = await doRequest(link);
+		const response = await doRequests(link);
 		for (const character of JSON.parse(response).characters) {
-			const charResp = await doRequest(character);
+			const charResp = await doRequests(character);
 			console.log(JSON.parse(charResp).name);
 		}
 	} catch (error) {
