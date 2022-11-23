@@ -1,48 +1,75 @@
 #include "sort.h"
 
+/**
+ * heap_sort - Build max heap
+ * @array: array
+ * @size: size of array
+ */
+void heap_sort(int *array, size_t size)
+{
+
+	size_t i;
+
+	if (array == NULL)
+		return;
+
+	/* Build max heap */
+	for (i = size / 2 ; i > 0; i--)
+		heap_root(array, size, i - 1, size);
+
+	/* Heap sort */
+	for (i = size - 1; i > 0; i--)
+	{
+		swap(&array[0], &array[i], array, size);
+
+		/* Heapify root element to get highest element at root again */
+		heap_root(array, i, 0, size);
+	}
+}
+
 
 /**
-* heapify - heapifies an array
-* @array: the array to sort
-* @size: array size
-* @calcsize: array size
-* @idx: index of the root
-* Return: 1 if n is palindrome, 0 otherwise
-*/
-void heapify(int *array, size_t size, size_t calcsize, int idx)
+ * heap_root - Find largest among root, left child and right chil
+ * @arr: array
+ * @n: size array
+ * @i: current position
+ * @size: size
+ */
+void heap_root(int *arr, int n, int i, size_t size)
 {
-    int root = idx;
-    int left = 2 * idx + 1;
-    int right = 2 * idx + 2;
-    int n = (int) size;
+	/* Find largest among root, left child and right child */
 
-    if (left < n && array[left] > array[root])
-    root = left;
-    if (right < n && array[right] > array[root])
-    root = right;
-    if (root != idx)
-    {
-        swap(array[idx], array[root]);
-        print_array(array, calcsize);
-        heapify(array, n, calcsize, root);
-    }
+	int largest = i;
+	int left = 2 * i + 1;
+	int right = 2 * i + 2;
+
+	if (left < n && arr[left] > arr[largest])
+		largest = left;
+
+	if (right < n && arr[right] > arr[largest])
+		largest = right;
+
+	/* Swap and continue heapifying if root is not largest */
+	if (largest != i)
+	{
+		swap(&arr[i], &arr[largest], arr, size);
+		heap_root(arr, n, largest, size);
+	}
+
 }
 
 /**
-* heap_sort - function that sorts an array using heap sort
-* @array: the array to sort
-* @size: array size
-* Return: 1 if n is palindrome, 0 otherwise
-*/
-void heap_sort(int *array, size_t size)
+ * swap - Function to swap the the position of two elements
+ * @a: first integer
+ * @b: second integer
+ * @array: array of numbers
+ * @n: size of array
+ */
+void swap(int *a, int *b, int *array, size_t n)
 {
-    int i;
-    for (i = size / 2 - 1; i >= 0; i--)
-    heapify(array, size, size, i);
-    for (i = size - 1; i > 0; i--)
-    {
-        swap(array[0], array[i]);
-        print_array(array, size);
-        heapify(array, i, size, 0);
-    }
+
+	int temp = *a;
+	*a = *b;
+	*b = temp;
+	print_array(array, n);
 }

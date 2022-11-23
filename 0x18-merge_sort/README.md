@@ -1,2 +1,1 @@
-0x18-merge_sort/
-
+# 0x18-merge_sort

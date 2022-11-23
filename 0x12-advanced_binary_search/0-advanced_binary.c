@@ -1,71 +1,71 @@
 #include "search_algos.h"
 
 /**
- * print_array - prints a sub array
- * @array: is a pointer to the first element of the array
- * @start: is the start endex of sub array to print
- * @end: is the end index of sub array to print
- * Return: the index where value is located
+ * print_array - Entry point
+ *
+ * @array: Array
+ * @first: Size of array
+ * @last: Value to find
+ * Return: Always EXIT_SUCCESS
  */
-void print_array(int *array, int start, int end)
+void print_array(int *array, int first, int last)
 {
-    int i;
-    printf("Searching in array: ");
-    for (i = start; i <= end; i++)
-    {
-        printf("%d", array[i]);
-        if (i != end)
-        printf(", ");
-    }
-    printf("\n");
+	int i;
+
+	printf("Searching in array: ");
+	for (i = first; i < last; i++)
+		printf("%d, ", array[i]);
+	printf("%d", array[i]);
+	printf("\n");
 }
 
 /**
- * search_in_array - searches for a value in a sorted array of integers.
- * @array: is a pointer to the first element of the array to search in
- * @start: is the start endex of sub array
- * @end: is the end index of sub array
- * @value: is the value to search for
- * Return: the index where value is located
- */
-int search_in_array(int *array, int start, int end, int value)
-{
-    int mid = (start + end) / 2;
-    int s, e;
-
-    if (end >= start)
-    {
-        if (array[mid] == value && end == start)
-        return (mid);
-        print_array(array, start, end);
-        if (array[mid] < value)
-        {
-            s = mid + 1;
-            e = end;
-        }
-        if (array[mid] >= value)
-        {
-            s = start;
-            e = mid;
-        }
-        
-        return (search_in_array(array, s, e, value));
-    }
-    return (-1);
-}
-
-/**
- * advanced_binary - searches for a value in a sorted array of integers.
- * @array: is a pointer to the first element of the array to search in
- * @size: is the number of elements in array
- * @value: is the value to search for
- * Return: the index where value is located
+ * advanced_binary - Entry point
+ *
+ * @array: Array
+ * @size: Size of array
+ * @value: Value to find
+ * Return: Always EXIT_SUCCESS
  */
 int advanced_binary(int *array, size_t size, int value)
 {
-    if (!array)
-    return (-1);
-    if (!value)
-    return (-1);
-    return (search_in_array(array, 0, ((int) size) - 1, value));
+	size_t first;
+	size_t last;
+
+	if (!array)
+		return (-1);
+
+	first = 0;
+	last = size - 1;
+	return (recursive_search(array, first, last, value));
+
+}
+
+
+/**
+ * recursive_search - Recursive advanced binary search
+ * @array: Array
+ * @first: First element of array
+ * @last: Last element of array
+ * @value: Value to find
+ * Return: Always EXIT_SUCCESS
+ */
+int recursive_search(int *array, size_t first, size_t last, int value)
+{
+	size_t half;
+
+	if (first < last)
+	{
+		half = first + (last - first) / 2;
+		print_array(array, (int)first, (int)last);
+		if (array[half] >= value)
+			return (recursive_search(array, first, half, value));
+		else
+			return (recursive_search(array, half + 1, last, value));
+		return ((int)(half));
+	}
+	if (array[first] == value)
+		return (first);
+	print_array(array, (int)first, (int)last);
+	return (-1);
 }

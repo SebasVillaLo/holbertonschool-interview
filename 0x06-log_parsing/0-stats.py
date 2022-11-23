@@ -1,53 +1,49 @@
 #!/usr/bin/python3
 """
-    Computes stdin input
+Task - Script that reads stdin line by line and computes metrics
 """
 
 import sys
 
+if __name__ == '__main__':
+    st_code = {
+        "200": 0,
+        "301": 0,
+        "400": 0,
+        "401": 0,
+        "403": 0,
+        "404": 0,
+        "405": 0,
+        "500": 0
+    }
+    count = 1
+    file_size = 0
 
-def parse_data(data):
-    data = data.replace(' "GET /projects/260 HTTP/1.1"',
-                        "").replace(' -', "").replace('[', "").replace(']', "")
-    if data.count("-") == 3:
-        data = data.replace('-', " ", 1)
-    array = data.split()
-    if len(array) != 5:
-        return
-    return array
+    def parse_line(line):
+        """ Read, parse and grab data"""
+        try:
+            parsed_line = line.split()
+            status_code = parsed_line[-2]
+            if status_code in st_code.keys():
+                st_code[status_code] += 1
+            return int(parsed_line[-1])
+        except Exception:
+            return 0
 
+    def print_stats():
+        """print stats in ascending order"""
+        print("File size: {}".format(file_size))
+        for key in sorted(st_code.keys()):
+            if st_code[key]:
+                print("{}: {}".format(key, st_code[key]))
 
-i = 0
-size = 0
-status_code = {
-    "200": 0,
-    "301": 0,
-    "400": 0,
-    "401": 0,
-    "403": 0,
-    "404": 0,
-    "405": 0,
-    "500": 0
-}
-try:
-    for line in sys.stdin:
-        i += 1
-        array = parse_data(line)
-        if array:
-            size += int(array[4])
-            if array[3] in status_code.keys():
-                status_code[array[3]] += 1
-        if i == 10:
-            print("File size: {}".format(size))
-            for k in sorted(status_code):
-                if status_code[k] != 0:
-                    print("{}: {}".format(k, status_code[k]))
-            i = 0
-except Exception:
-    pass
-finally:
-    print("File size: {}".format(size))
-    for k in sorted(status_code):
-        if status_code[k] != 0:
-            print("{}: {}".format(k, status_code[k]))
-    i = 0
+    try:
+        for line in sys.stdin:
+            file_size += parse_line(line)
+            if count % 10 == 0:
+                print_stats()
+            count += 1
+    except KeyboardInterrupt:
+        print_stats()
+        raise
+    print_stats()
