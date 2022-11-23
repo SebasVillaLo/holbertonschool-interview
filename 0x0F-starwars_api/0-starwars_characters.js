@@ -1,21 +1,32 @@
 #!/usr/bin/node
 const request = require('request');
-const Id = process.argv[2];
-const url = 'https://swapi-api.hbtn.io/api/films/' + Id;
 
-request(url, async (err, response, body) => {
-    if (err) {
-        console.log(err);
-    }
-    for (const charId of JSON.parse(body).characters) {
-        await new Promise((resolve, reject) => {
-            request(charId, (err, response, body) => {
-                if (err) {
-                    reject(err);
-                }
-                console.log(JSON.parse(body).name);
-                resolve();
-            });
+function doRequest(url) {
+    return new Promise((resolve, reject) => {
+        request(url, (error, res, body) => {
+            if (!error && res.statusCode === 200) {
+                resolve(body);
+            } else {
+                reject(error);
+            }
         });
+    });
+}
+
+async function f() {
+    try {
+        // every variable with await
+        // will be whatever you passed to `resolve()` at the top
+        const link = `https://swapi-api.hbtn.io/api/films/${process.argv[2]}`;
+        const response = await doRequest(link);
+        for (const character of JSON.parse(response).characters) {
+            const charResp = await doRequest(character);
+            console.log(JSON.parse(charResp).name);
+        }
+    } catch (error) {
+        // `error` will be whatever you passed to `reject()` at the top
+        console.error(error);
     }
-});
+}
+
+f();
