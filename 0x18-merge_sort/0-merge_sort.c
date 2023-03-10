@@ -1,122 +1,92 @@
 #include "sort.h"
 
 /**
- * sort - Sort subarrays
- * @arr: Pointer to array of integers
- * @l: Pointer to left subarray
- * @r: Pointer to right subarray
- * @start: First index of left subarray
- * @mid: Last index of left subarray
- * @end: Last index of right subarray
+ * merge_sort - sorts an array of ints using top-down merge sort algorithm
+ * @array: array of integers to sort
+ * @size: size of the array of integers to sort
  *
- * Return: None
  */
-void sort(int *arr, int *l, int *r, int start, int mid, int end)
+
+void merge_sort(int *array, size_t size)
 {
-	int left_iter, right_iter, array_iter;
-	int left_size = mid - start + 1;
-	int right_size = end - mid;
+	int *holder = malloc(sizeof(int) * size);
 
-	left_iter = right_iter = 0;
-	array_iter = start;
-
-	while (left_iter < left_size && right_iter < right_size)
+	if (holder == NULL)
+		return;
+	if (size <= 1 || array == NULL)
 	{
-		if (l[left_iter] < r[right_iter])
+		free(holder);
+		return;
+	}
+	merge_sort_holder(array, size, holder);
+	free(holder);
+}
+
+/**
+ * merge_sort_holder - sorts array of ints with top-down merge sort algorithm
+ * and includes malloced holder array
+ * @array: array of integers to sort
+ * @size: size of the array of integers to sort
+ * @holder: temp array to hold information during merge
+ */
+
+void merge_sort_holder(int *array, size_t size, int *holder)
+{
+	int mid = size / 2;
+
+	if (size <= 1)
+		return;
+
+	merge_sort_holder(array, mid, holder);
+	merge_sort_holder(&array[mid], size - mid, holder);
+	merge(holder, array, mid, size);
+}
+
+/**
+ * merge - merges two subarrays together
+ * @holder: temp array to hold information during merge
+ * @array: array to merge
+ * @mid: index of mid-point
+ * @size: size of array to merge
+ *
+ */
+
+void merge(int *holder, int *array, int mid, size_t size)
+{
+	int left = 0, right = mid, index = 0;
+
+	printf("Merging...\n[left]: ");
+	print_array(array, mid);
+	printf("[right]: ");
+	print_array(&array[mid], size - mid);
+	while (left < mid && right < (int)size)
+	{
+		if (array[left] <= array[right])
 		{
-			arr[array_iter] = l[left_iter];
-			left_iter++;
+			holder[index] = array[left];
+			left++;
 		}
 		else
 		{
-			arr[array_iter] = r[right_iter];
-			right_iter++;
+			holder[index] = array[right];
+			right++;
 		}
-		array_iter++;
+		index++;
 	}
-
-	while (left_iter < left_size)
+	while (left < mid)
 	{
-		arr[array_iter] = l[left_iter];
-		left_iter++;
-		array_iter++;
+		holder[index] = array[left];
+		left++;
+		index++;
 	}
-
-	while (right_iter < right_size)
+	while (right < (int)size)
 	{
-		arr[array_iter] = r[right_iter];
-		right_iter++;
-		array_iter++;
+		holder[index] = array[right];
+		right++;
+		index++;
 	}
-}
-
-/**
- * merge - Merge subarrays
- * @array: Pointer to array of integers
- * @start: First index of left subarray
- * @mid: Last index of left subarray
- * @end: Last index of right subarray
- *
- * Return: None
- */
-void merge(int *array, int start, int mid, int end)
-{
-	int left_iter, right_iter;
-	int left_size = mid - start + 1;
-	int right_size = end - mid;
-
-#pragma GCC diagnostic ignored "-Wvla"
-	int left[left_size];
-	int right[right_size];
-
-	for (left_iter = 0; left_iter < left_size; left_iter++)
-		left[left_iter] = array[start + left_iter];
-	for (right_iter = 0; right_iter < right_size; right_iter++)
-		right[right_iter] = array[mid + right_iter + 1];
-
-	printf("Merging...\n[left]: ");
-	print_array(left, left_size);
-	printf("[right]: ");
-	print_array(right, right_size);
-
-	sort(array, left, right, start, mid, end);
-
+	for (index = 0; index < (int)size; index++)
+		array[index] = holder[index];
 	printf("[Done]: ");
-	print_array(&array[start], left_size + right_size);
-}
-
-/**
- * split_arrays - Split array into subarrays
- * @array: Pointer to array of integers
- * @start: First index of left subarray
- * @end: Last index of right subarray
- *
- * Return: None
- */
-void split_arrays(int *array, int start, int end)
-{
-	int mid = (start + end - 1) / 2;
-
-	if (start < end)
-	{
-		split_arrays(array, start, mid);
-		split_arrays(array, mid + 1, end);
-
-		merge(array, start, mid, end);
-	}
-}
-
-/**
- * merge_sort - Sort array in-place using merge sort algorithm
- * @array: Pointer to array of integers
- * @size: Number of elements in array
- *
- * Return: None
- */
-void merge_sort(int *array, size_t size)
-{
-	if (array && size >= 2)
-	{
-		split_arrays(array, 0, size - 1);
-	}
+	print_array(array, size);
 }

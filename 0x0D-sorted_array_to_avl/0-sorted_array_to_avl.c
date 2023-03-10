@@ -1,64 +1,99 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include "holberton.h"
-
+#include "binary_trees.h"
 
 /**
- * create_node - Creates new npde
+ * sorted_array_to_avl - builds an AVL tree from sorted array without rotation
  *
- * @array: The array to transform to AVL Tree
- * @parent: Parent node
- * @start: The start of sub array
- * @end: The end of sub array
- * Return: the last newly created node
+ * @array: pointer to the first element of the array to be converted
+ * @size: number of elements in the array
+ *
+ * Return: pointer to the root node of the created AVL tree, or NULL if failed
  */
-avl_t *create_node(int *array, avl_t *parent, int start, int end)
+avl_t *sorted_array_to_avl(int *array, size_t size)
 {
-	int mid;
-	avl_t *newNode;
+	avl_t *tree = NULL;
+	int check = 0;
 
-	if (start > end)
-	return (NULL);
-	mid = (start + end) / 2;
+	if (array == NULL || size < 1)
+		return (NULL);
 
-	newNode = malloc(sizeof(avl_t));
-	if (!newNode)
-	return (NULL);
+	check = add_node_avl(array, size, &tree, 1);
+	if (check)
+	{
+		free_avl(&tree);
+		return (NULL);
+	}
 
-	newNode->n = array[mid];
-	newNode->parent = parent;
-	newNode->left = create_node(array, newNode, start, mid - 1);
-	newNode->right = create_node(array, newNode, mid + 1, end);
-
-	return (newNode);
+	return (tree);
 }
 
 
 /**
- * sorted_array_to_avl - Transforms sorted array to AVL Tree
+ * add_node_avl - builds tree from sorted array, adding nodes recursively
  *
- * @array: the array to be transformed
- * @size: array size
- * Return: the head of AVL Tree
+ * @array: pointer to the first element of the array to be converted
+ * @size: number of elements in the array
+ * @tree: double pointer to AVL tree
+ * @add_left: flag to indicate if the new node will be a left child
+ *
+ * Return: 0 if successful, or -1 if failed
  */
-avl_t *sorted_array_to_avl(int *array, size_t size)
+int add_node_avl(int *array, size_t size, avl_t **tree, int add_left)
 {
-	int mid, start, end;
-	avl_t *head;
+	size_t halfway = (size - 1) / 2;
+	avl_t *new_node = NULL;
+	int check = 0;
 
-	if (!array)
-	return (NULL);
+	if (array == NULL || size < 1)
+		return (0);
 
-	start = 0;
-	end = size - 1;
-	mid = (start + end) / 2;
+	new_node = malloc(sizeof(avl_t));
+	if (new_node == NULL)
+		return (-1);
+	new_node->n = array[halfway];
+	new_node->parent = (*tree);
+	new_node->left = NULL;
+	new_node->right = NULL;
 
-	head = malloc(sizeof(avl_t));
-	if (!head)
-	return (NULL);
-	head->n = array[mid];
-	head->parent = NULL;
-	head->left = create_node(array, head, start, mid - 1);
-	head->right = create_node(array, head, mid + 1, end);
-	return (head);
+	if ((*tree) == NULL)
+		(*tree) = new_node;
+	else if (add_left)
+		(*tree)->left = new_node;
+	else
+		(*tree)->right = new_node;
+
+	check = add_node_avl(array, halfway, &new_node, 1);
+	if (check == -1)
+		return (-1);
+
+	halfway++;
+	check = add_node_avl(&array[halfway], size - halfway, &new_node, 0);
+	if (check == -1)
+		return (-1);
+
+	return (0);
+}
+
+/**
+ * free_avl - frees AVL tree if later node creation failed
+ *
+ * @tree: double pointer to AVL tree
+ *
+ */
+void free_avl(avl_t **tree)
+{
+	avl_t *left = NULL, *right = NULL;
+
+	if (tree == NULL || (*tree) == NULL)
+		return;
+
+	left = (*tree)->left;
+	right = (*tree)->right;
+
+	free((*tree)->parent);
+	free((*tree)->right);
+	free((*tree)->left);
+	free(*tree);
+
+	free_avl(&left);
+	free_avl(&right);
 }

@@ -1,157 +1,113 @@
 #!/usr/bin/python3
-"""brudda osas is da real brudda"""
-
+"""
+Solves the N Queens puzzle for NxN chessboard
+finds placement of N number of non-attacking queens
+"""
 
 import sys
 
 
-class Queen:
-    """brudda osas is da real brudda"""
+def board_set_up(N):
+    """
+    Sets up blank NxN chessboard
 
-    def __init__(self, x, y):
-        """brudda osas is da real brudda"""
-        self.x = x
-        self.y = y
-        self.rep = 'Q'
+    parameters:
+        N [int]: represents the size of the board
 
-    def trimBoard(self, board, debug=False):
-        """brudda osas is da real brudda"""
-        atx = self.x + 1
-        aty = self.y
-        if debug:
-            print("checking horizontal")
-        while atx != self.x:
-            if atx == board.size:
-                atx = 0
-            if atx == self.x:
-                break
-            if debug:
-                print("Checking [{}, {}] = {}"
-                      .format(atx, aty, board.get(atx, aty) == 'Q'))
-            board.matrix[aty][atx] = 'x'
-            atx += 1
-
-        if debug:
-            print("checking vertical")
-        atx = self.x
-        aty = self.y + 1
-        while aty != self.y:
-            if aty == board.size:
-                aty = 0
-            if aty == self.y:
-                break
-            if debug:
-                print("Checking [{}, {}] = {}".format(
-                    atx, aty, board.get(atx, aty) == 'Q'))
-            board.matrix[aty][atx] = 'x'
-            aty += 1
-
-        if debug:
-            print("checking first diagonal")
-        atx = self.x + 1
-        aty = self.y + 1
-        while atx != self.x and aty != self.y:
-            if atx == board.size:
-                atx = atx - aty
-                aty = 0
-            if aty == board.size:
-                aty = aty - atx
-                atx = 0
-            if atx == self.x and aty == self.y:
-                break
-            if debug:
-                print("Checking [{}, {}] = {}".format(
-                    atx, aty, board.get(atx, aty) == 'Q'))
-            board.matrix[aty][atx] = 'x'
-            atx += 1
-            aty += 1
-
-        if debug:
-            print("checking second diagonal")
-        atx = self.x - 1
-        aty = self.y + 1
-        while atx != self.x and aty != self.y:
-            if atx == -1:
-                aux = atx + 1
-                atx = aty - 1
-                aty = aux
-            if aty == board.size:
-                aux = atx + 1
-                atx = aty - 1
-                aty = aux
-            if atx == self.x and aty == self.y:
-                break
-            if debug:
-                print("Checking [{}, {}] = {}".format(
-                    atx, aty, board.get(atx, aty) == 'Q'))
-            board.matrix[aty][atx] = 'x'
-            atx -= 1
-            aty += 1
+    board is initialized to 0s
+    """
+    matrix = []
+    for row in range(N):
+        matrix_row = []
+        for column in range(N):
+            matrix_row.append(0)
+        matrix.append(matrix_row)
+    return (matrix)
 
 
-class Board:
+def print_solution(matrix):
+    """
+    Prints the coordinates where there is a queen
 
-    def __init__(self, size):
-        self.size = size
-        self.matrix = [["." for x in range(size)] for y in range(size)]
+    parameters:
+        matrix [list of lists]: represents the NxN chessboard
 
-    def placeQueen(self, Queen):
-        self.matrix[Queen.y][Queen.x] = 'Q'
+    queens indicated by 1 in matrix
+    coordinates printed as list of lists
+    """
+    queens_coordinates = []
+    for i, row in enumerate(matrix):
+        for j, column in enumerate(row):
+            if column == 1:
+                queen = []
+                queen.append(i)
+                queen.append(j)
+                queens_coordinates.append(queen)
+    print(queens_coordinates)
 
-    def get(self, x, y):
-        return self.matrix[y][x]
 
-    def printBoard(self):
-        for i in range(self.size):
-            for j in range(self.size):
-                print(" {} ".format(self.matrix[i][j]), end="")
-            print()
+def is_safe(matrix, new_row, new_column):
+    """
+    Determines if a queen is safe to be put in new_row, new_column
 
-    def getQueens(self):
-        queens = []
-        for i in range(self.size):
-            for j in range(self.size):
-                if self.matrix[j][i] == 'Q':
-                    queens.append([i, j])
-        return queens
+    parameters:
+        matrix [list of lists]: represents the NxN chessboard
+        new_row [int]: row coordinate for potential new queen
+        new_column [int]: column coordinate for potential new queen
+    """
+    # checks row up to column (left side of row)
+    for i in range(new_column):
+        if matrix[new_row][i]:
+            return False
+    # checks upper diagonal
+    for i, j in zip(range(new_row, -1, -1),
+                    range(new_column, -1, -1)):
+        if matrix[i][j]:
+            return False
+    N = len(matrix)
+    # checks lower diagonal
+    for i, j in zip(range(new_row, N, 1),
+                    range(new_column, -1, -1)):
+        if matrix[i][j]:
+            return False
+    return True
 
-    def resetBoard(self):
-        self.matrix = [["." for x in range(size)] for y in range(size)]
 
-    def solveNQueens(self):
-        for i in range(self.size):
-            for j in range(self.size):
-                if self.matrix[j][i] != 'x':
-                    queen = Queen(i, j)
-                    queen.trimBoard(self)
-                    self.placeQueen(queen)
+def solve(matrix, new_column):
+    """
+    Recursively solves the N Queens puzzle
+
+    parameters:
+        matrix [list of lists]: represents NxN chessboard
+        new_column [int]: column to test for new queen
+    """
+    N = len(matrix)
+    # base case: all queens are placed
+    if new_column >= N:
+        print_solution(matrix)
+        return matrix
+    for new_row in range(N):
+        if is_safe(matrix, new_row, new_column):
+            matrix[new_row][new_column] = 1
+            # call to recursively try to solve rest of queens
+            solve(matrix, new_column + 1)
+            # if can't solve with this position, re-set as 0
+            matrix[new_row][new_column] = 0
+    return None
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
-        sys.exit(1)
+        exit(1)
+    N = sys.argv[1]
     try:
-        size = int(sys.argv[1])
-    except Exception:
+        N = int(N)
+    except Exception as e:
         print("N must be a number")
-        sys.exit(1)
-    if size < 4:
+        exit(1)
+    if N < 4:
         print("N must be at least 4")
-        sys.exit(1)
-
-    board = Board(size)
-    solutions = []
-    for i in range(size):
-        for j in range(size):
-            board.resetBoard()
-            queen = Queen(i, j)
-            queen.trimBoard(board)
-            board.placeQueen(queen)
-            board.solveNQueens()
-            if len(board.getQueens()) == size:
-                if board.getQueens() not in solutions:
-                    solutions.append(board.getQueens())
-
-    for i in solutions:
-        print(i)
+        exit(1)
+    matrix = board_set_up(N)
+    solve(matrix, 0)

@@ -1,49 +1,51 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "search.h"
 
 /**
- * linear_skip - performs linear skip search on a linked list
+ * linear_skip - searches for a value in a sorted skip list of ints,
+ * printing the current element every time it is compared to value
  *
- * @list: head of the list
+ * @list: pointer to the head of the skip list to sort in,
+ * list is sorted in ascending order
  * @value: the value to search for
- * Return: the wanted node or NULL on failure
+ *
+ * Return: pointer to the first node in the list where value is located,
+ * or NULL if value is not in the list or head of the list is NULL
  */
 skiplist_t *linear_skip(skiplist_t *list, int value)
 {
-	skiplist_t *express, *tmp;
+	skiplist_t *mover = NULL, *express = NULL;
+	char string1[24] = "Value checked at index ";
+	char string2[29] = "Value found between indexes ";
 
-	express = tmp = list;
-
-	if (!list)
-	return (NULL);
+	if (list == NULL)
+		return (NULL);
+	mover = list;
+	express = list;
 	while (express->express)
 	{
-		tmp = express;
+		mover = express;
 		express = express->express;
-		printf("Value checked at index [%ld] = [%d]\n", express->index, express->n);
-		if (express->n >= value || !express->express)
+		printf("%s[%ld] = [%d]\n", string1, express->index, express->n);
+		if (express->n >= value)
+			break;
+		if (express->express == NULL)
 		{
-			if (!express->express && express->n < value)
-			{
-				tmp = express;
-				while (express->next)
+			mover = express;
+			while (express->next)
 				express = express->next;
-			}
-			printf("Value found between indexes [%ld] and [%ld]\n", tmp->index,
-			 express->index);
-			while (tmp != express)
-			{
-				printf("Value checked at index [%ld] = [%d]\n", tmp->index, tmp->n);
-				if (tmp->n == value)
-				return (tmp);
-				tmp = tmp->next;
-			}
-			if (express->n < value)
-			printf("Value checked at index [%ld] = [%d]\n", tmp->index, tmp->n);
-			return (NULL);
 		}
 	}
+	printf("%s[%ld] and [%ld]\n", string2, mover->index, express->index);
+	while (mover->next && mover->index != express->index)
+	{
+		printf("%s[%ld] = [%d]\n", string1, mover->index, mover->n);
+		if (mover->n >= value)
+			break;
+		mover = mover->next;
+	}
+	if (mover->next == NULL)
+		printf("%s[%ld] = [%d]\n", string1, mover->index, mover->n);
+	if (mover->n == value)
+		return (mover);
 	return (NULL);
 }

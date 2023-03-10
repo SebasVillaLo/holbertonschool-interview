@@ -1,71 +1,45 @@
 #include "search_algos.h"
 
 /**
- * print_array - Entry point
+ * advanced_binary - uses advanced binary search to search for first time
+ * a given value appears in a sorted array using recursion
  *
- * @array: Array
- * @first: Size of array
- * @last: Value to find
- * Return: Always EXIT_SUCCESS
- */
-void print_array(int *array, int first, int last)
-{
-	int i;
-
-	printf("Searching in array: ");
-	for (i = first; i < last; i++)
-		printf("%d, ", array[i]);
-	printf("%d", array[i]);
-	printf("\n");
-}
-
-/**
- * advanced_binary - Entry point
+ * @array: pointer to the first element of the sorted array to search in;
+ * array is sorted in ascending order
+ * @size: number of elements in array
+ * @value: the given value to search for
  *
- * @array: Array
- * @size: Size of array
- * @value: Value to find
- * Return: Always EXIT_SUCCESS
+ * Return: the first index where value is located, or -1 on failure
  */
 int advanced_binary(int *array, size_t size, int value)
 {
-	size_t first;
-	size_t last;
+	int half = ((size - 1) / 2), result = 0;
+	size_t i = 0;
 
-	if (!array)
+	if (array == NULL || size < 1)
 		return (-1);
 
-	first = 0;
-	last = size - 1;
-	return (recursive_search(array, first, last, value));
-
-}
-
-
-/**
- * recursive_search - Recursive advanced binary search
- * @array: Array
- * @first: First element of array
- * @last: Last element of array
- * @value: Value to find
- * Return: Always EXIT_SUCCESS
- */
-int recursive_search(int *array, size_t first, size_t last, int value)
-{
-	size_t half;
-
-	if (first < last)
+	printf("Searching in array: ");
+	for (i = 0; i < size; i++)
 	{
-		half = first + (last - first) / 2;
-		print_array(array, (int)first, (int)last);
-		if (array[half] >= value)
-			return (recursive_search(array, first, half, value));
+		printf("%d", array[i]);
+		if (i != (size - 1))
+			printf(", ");
 		else
-			return (recursive_search(array, half + 1, last, value));
-		return ((int)(half));
+			printf("\n");
 	}
-	if (array[first] == value)
-		return (first);
-	print_array(array, (int)first, (int)last);
-	return (-1);
+
+	if (array[half] == value && half == 0)
+		return (half);
+	else if (size == 1)
+		return (-1);
+
+	if (array[half] >= value)
+		return (advanced_binary(array, half + 1, value));
+
+	half++;
+	result = advanced_binary(&array[half], size - half, value);
+	if (result == -1)
+		return (-1);
+	return (half + result);
 }

@@ -1,33 +1,28 @@
 #!/usr/bin/node
-
-const request = require("request");
-
-function doRequests(url) {
-	return new Promise((resolve, reject) => {
-		request(url, (error, res, body) => {
-			if (!error && res.statusCode === 200) {
-				resolve(body);
-			} else {
-				reject(error);
-			}
-		});
-	});
-}
-
-async function f() {
-	try {
-		// every variable with await
-		// will be whatever you passed to `resolve()` at the top
-		const link = `https://swapi-api.hbtn.io/api/films/${process.argv[2]}`;
-		const response = await doRequests(link);
-		for (const character of JSON.parse(response).characters) {
-			const charResp = await doRequests(character);
-			console.log(JSON.parse(charResp).name);
-		}
-	} catch (error) {
-		// `error` will be whatever you passed to `reject()` at the top
-		console.error(error);
-	}
-}
-
-f();
+// script that prints all characters of a Star Wars movie in order
+const request = require('request');
+const myArgs = process.argv.splice(2);
+const URL = 'https://swapi-api.hbtn.io/api/films/' + myArgs[0];
+request.get(URL, async (err, response, body) => {
+  if (err) {
+    console.log(err);
+  } else {
+    const character = JSON.parse(body).characters;
+    const characterList = characterURLs => {
+      const promise = new Promise((resolve, reject) => {
+        request.get(characterURLs, (err, response, body) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(body);
+          }
+        });
+      });
+      return promise;
+    };
+    for (let i = 0; i < character.length; i++) {
+      const result = await characterList(character[i]);
+      console.log(JSON.parse(result).name);
+    }
+  }
+});

@@ -1,13 +1,20 @@
-#ifndef _SANDPILES_T
-#define _SANDPILES_T
+#ifndef SANDPILES_H
+#define SANDPILES_H
 
+/* INCLUDED LIBRARIES */
 #include <stdlib.h>
 #include <stdio.h>
 
-void sandpiles_sum(int grid1[3][3], int grid2[3][3]);
-static void print_grid(int grid[3][3]);
-void sum_grids(int grid1[3][3], int grid2[3][3]);
-void change_grids(int grid1[3][3]);
-int check_grids(int grid1[3][3]);
+/* FUNCTION PROTOTYPES */
 
-#endif /* _SANDPILES_T */
+/* function to print individual grid */
+static void print_grid(int grid[3][3]);
+
+/* function to sum two sandpiles */
+void sandpiles_sum(int grid1[3][3], int grid2[3][3]);
+/* subfunction to check stability of grid1 and set flags grid */
+int grid1_unstable(int grid1[3][3], int flags[3][3]);
+/* subfunction to topple individual cell to help stabilize sandpile */
+void topple(int grid1[3][3], int i, int j);
+
+#endif /* SANDPILES_H */

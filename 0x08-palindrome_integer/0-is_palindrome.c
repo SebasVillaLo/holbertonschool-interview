@@ -1,28 +1,31 @@
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "palindrome.h"
 
 /**
- * is_palindrome - Function to check palindromes
- * @n: Number to be checked
- * Return: integer 1 or 0
+ * is_palindrome - checks if given unsigned int is a palindrome
+ * @n: unsigned long int to check if palindrome
+ *
+ * Return: returns 1 if palindrome, 0 otherwise
  */
+
 int is_palindrome(unsigned long n)
 {
-	unsigned long num, valr = 0;
+	unsigned long original = n, reverse = 0;
+	int last = 0;
 
-	num = n;
-
-	while (num != 0)
+	while (n != 0)
 	{
-		valr = valr * 10;
-		valr = valr + num % 10;
-		num = num / 10;
+		/* find the value of the last digit */
+		last = n % 10;
+		/* store the value in a reverse number */
+		/* multiply by ten to increase the digit count of reverse */
+		reverse *= 10;
+		/* add the last digit to reverse */
+		reverse += last;
+		/* cut off the last digit so the new last digit is next digit */
+		n /= 10;
 	}
-
-	if (n == valr)
+	/* check if original number and calculated reverse are the same */
+	if (original == reverse)
 		return (1);
-	else
-		return (0);
+	return (0);
 }

@@ -1,71 +1,50 @@
 #include "lists.h"
 
 /**
- * is_palindrome - checks if a linked list is palindrome
- * @head: linked list head
- * Return: 1 if is palindrome or 0 if not
+ * is_palindrome - checks if a singly linked list is a palindrome
+ * @head: double pointer to the first node of a singly linked list
+ *
+ * Return: 0 if not palindrome, 1 if palindrome
  */
 
 int is_palindrome(listint_t **head)
 {
-	int length = list_length(head);
-	int half_length = length / 2;
-	int i, if_palindrome = 1;
-	listint_t *reversed_head;
-	listint_t *current = *head;
-	listint_t *current_reversed;
-
-	reversed_head = *head;
-	for (i = 0; i < half_length; i++)
-		reversed_head = reversed_head->next;
-	if (length % 2 != 0)
-		reversed_head = reversed_head->next;
-	reversed_head = reversed(&reversed_head);
-	current_reversed = reversed_head;
-	current = *head;
-	while (current_reversed != NULL)
-	{
-		if (current_reversed->n != current->n)
-			if_palindrome = 0;
-		current_reversed = current_reversed->next;
-		current = current->next;
-	}
-	return (if_palindrome);
+	/* if not given valid pointer (no list), return 0 */
+	if (head == NULL)
+		return (0);
+	/* if linked list is empty, return 1 */
+	if (*head == NULL)
+		return (1);
+	/* otherwise, use recursive palindrome_check function */
+	return (palindrome_check(head, *head));
 }
 
 /**
- * list_length - Get the length of a linked list
- * @head: linked list head
- * Return: lenght
+ * palindrome_check - checks is list is a palindrome recursively
+ * @head: double pointer to beginning of list
+ * @mover: single pointer to list to move to end
+ *
+ * Return: 0 if not palindrome, 1 if palindrome
  */
-
-int list_length(listint_t **head)
+int palindrome_check(listint_t **head, listint_t *mover)
 {
-	int i;
-	listint_t *current = *head;
-
-	for (i = 0; current != NULL; i++)
-		current = current->next;
-	return (i);
-}
-
-/**
- * reversed - function that reversed a linked list
- * @head: double pointer
- * Return: Address of the new element
- */
-
-listint_t *reversed(listint_t **head)
-{
-	listint_t *prev = NULL, *current = *head, *next = NULL;
-
-	while (current != NULL)
+	/* move pointer to the end of the linked list */
+	if (mover->next)
 	{
-		next = current->next;
-		current->next = prev;
-		prev = current;
-		current = next;
+		/* if return is true, move front pointer forward */
+		/* moving head to next node will allow to check against end */
+		/*   when recurisively working back up through the stack */
+		if (palindrome_check(head, mover->next))
+			(*head) = (*head)->next;
+		/* otherwise, indicate already failed check */
+		else
+			return (0);
 	}
-	*head = prev;
-	return (*head);
+	/* check if front pointer matches end pointer */
+	if ((*head)->n == mover->n)
+		/* if true, return success to move up stack which will move */
+		/*   front pointer forward and end pointer backward */
+		return (1);
+	/* otherwise, indicate up through the stack that failed check */
+	return (0);
 }

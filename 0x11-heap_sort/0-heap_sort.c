@@ -1,48 +1,80 @@
 #include "sort.h"
 
-
 /**
-* heapify - heapifies an array
-* @array: the array to sort
-* @size: array size
-* @calcsize: array size
-* @idx: index of the root
-* Return: 1 if n is palindrome, 0 otherwise
-*/
-void heapify(int *array, size_t size, size_t calcsize, int idx)
+ * heap_sort - sorts an array of ints in ascending order
+ * using Heap Sort algorithm
+ *
+ * @array: the array of ints to sort
+ * @size: the size of the array to sort
+ *
+ */
+void heap_sort(int *array, size_t size)
 {
-    int root = idx;
-    int left = 2 * idx + 1;
-    int right = 2 * idx + 2;
-    int n = (int) size;
-
-    if (left < n && array[left] > array[root])
-    root = left;
-    if (right < n && array[right] > array[root])
-    root = right;
-    if (root != idx)
-    {
-        swap(array[idx], array[root]);
-        print_array(array, calcsize);
-        heapify(array, n, calcsize, root);
-    }
+	if (array == NULL || size <= 1)
+		return;
+	heap_sort_print(array, size, array, size);
 }
 
 /**
-* heap_sort - function that sorts an array using heap sort
-* @array: the array to sort
-* @size: array size
-* Return: 1 if n is palindrome, 0 otherwise
-*/
-void heap_sort(int *array, size_t size)
+ * heap_sort_print - heap sort with full array as parameter for printing
+ *
+ * @array: array to sort
+ * @size: size of array to sort
+ * @array_p: array to print
+ * @size_p: size of array to print
+ *
+ */
+void heap_sort_print(int *array, size_t size, int *array_p, size_t size_p)
 {
-    int i;
-    for (i = size / 2 - 1; i >= 0; i--)
-    heapify(array, size, size, i);
-    for (i = size - 1; i > 0; i--)
-    {
-        swap(array[0], array[i]);
-        print_array(array, size);
-        heapify(array, i, size, 0);
-    }
+	int i = 0, temp = 0;
+
+	for (i = (size - 1) / 2; i >= 0; i--)
+	{
+		heapify(array, size, i, array_p, size_p);
+	}
+	for (i = (size - 1); i > 0; i--)
+	{
+		temp = array[i];
+		array[i] = array[0];
+		array[0] = temp;
+		array_p[i] = array[i];
+		array_p[0] = array[0];
+		print_array(array_p, size_p);
+
+		heapify(array, i, 0, array_p, size_p);
+	}
+}
+
+/**
+ * heapify - reorders array like nodes swapping in a heap
+ *
+ * @array: the array of ints to sort
+ * @size: the size of the array to sort
+ * @i: current index in array
+ * @array_p: array to print
+ * @size_p: size of array to print
+ *
+ */
+void heapify(int *array, size_t size, int i, int *array_p, size_t size_p)
+{
+	int max = i;
+	int left_child = 2 * i + 1;
+	int right_child = 2 * i + 2;
+	int temp = 0;
+
+	if (left_child < (int)size && array[left_child] > array[max])
+		max = left_child;
+	if (right_child < (int)size && array[right_child] > array[max])
+		max = right_child;
+	if (max != i)
+	{
+		temp = array[i];
+		array[i] = array[max];
+		array[max] = temp;
+		array_p[i] = array[i];
+		array_p[max] = array[max];
+		print_array(array_p, size_p);
+
+		heapify(array, size, max, array_p, size_p);
+	}
 }
